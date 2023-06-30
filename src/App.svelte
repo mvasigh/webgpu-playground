@@ -1,93 +1,116 @@
 <script lang="ts">
-  import { onMount } from "svelte";
-  import shader from "./shader.wgsl?raw";
+  import type { ComponentType } from "svelte";
 
-  let canvas: HTMLCanvasElement;
+  import Router, { link, location } from "svelte-spa-router";
+  import Triangle from "./sketches/triangle/Triangle.svelte";
+  import Compute from "./sketches/compute/Compute.svelte";
 
-  async function main() {
-    // Check to see if user's browser supports WebGPU
-    const adapter = await navigator.gpu?.requestAdapter();
-    const device = await adapter?.requestDevice();
-
-    if (!device) {
-      throw new Error("need a browser that supports WebGPU");
-    }
-
-    // Get a WebGPU context from the canvas and configure it
-    const canvas = document.querySelector("canvas");
-    const context = canvas.getContext("webgpu");
-    const presentationFormat = navigator.gpu.getPreferredCanvasFormat();
-    context.configure({
-      device,
-      format: presentationFormat,
-    });
-
-    // Create the shader module (contains vertex and fragment shader)
-    const module = device.createShaderModule({
-      label: `basic shader with hard-coded red triangle`,
-      code: shader,
-    });
-
-    // Create the render pipeline
-    const renderPipeline = device.createRenderPipeline({
-      label: `basic hard-coded triangle pipeline`,
-      layout: "auto",
-      vertex: {
-        module,
-        entryPoint: "vs",
-      },
-      fragment: {
-        module,
-        entryPoint: "fs",
-        targets: [{ format: presentationFormat }],
-      },
-    });
-
-    // Create the render pass descriptor which describes what textures will be drawn
-    const renderPassDescriptor: GPURenderPassDescriptor = {
-      label: `hard-coded triangle renderPass`,
-      colorAttachments: [
-        {
-          view: context.getCurrentTexture().createView(),
-          clearValue: [0.3, 0.3, 0.3, 1],
-          loadOp: "clear",
-          storeOp: "store",
-        },
-      ],
-    };
-
-    function render() {
-      const encoder = device.createCommandEncoder({ label: "render encoder" });
-      const pass = encoder.beginRenderPass(renderPassDescriptor);
-      pass.setPipeline(renderPipeline);
-      pass.draw(3);
-      pass.end();
-
-      const commandBuffer = encoder.finish();
-      device.queue.submit([commandBuffer]);
-    }
-
-    render();
-  }
-
-  onMount(main);
+  const ROUTES: Array<{
+    href: string;
+    label: string;
+    component: ComponentType;
+  }> = [
+    {
+      href: "/triangle",
+      label: "Triangle",
+      component: Triangle,
+    },
+    {
+      href: "/compute",
+      label: "Compute",
+      component: Compute,
+    },
+  ];
 </script>
 
-<main>
-  <canvas bind:this={canvas} />
-</main>
+<div class="root">
+  <nav>
+    <h1 class="title">WebGPU</h1>
+    <ul class="nav-list">
+      {#each ROUTES as { href, label }}
+        <li class="nav-item" class:nav-item-active={$location === href}>
+          <a use:link {href}>
+            {label}
+          </a>
+        </li>
+      {/each}
+    </ul>
+  </nav>
+
+  <main>
+    <Router
+      routes={ROUTES.reduce((dict, { href, component }) => {
+        dict[href] = component;
+        return dict;
+      }, {})}
+    />
+  </main>
+</div>
 
 <style>
-  canvas {
-    width: 600px;
-    height: 600px;
+  .root {
+    display: grid;
+    grid-template-columns: 300px 1fr;
+  }
+
+  nav {
+    background-color: var(--gray-11);
+    border-right: 1px solid var(--gray-7);
+  }
+
+  h1.title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    padding: 1rem;
+    margin: 0;
+    color: var(--gray-5);
   }
 
   main {
+    background-color: var(--gray-12);
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
-    width: 100%;
+  }
+
+  ul.nav-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  li.nav-item {
+    padding: var(--size-1) var(--size-4);
+  }
+
+  li.nav-item a {
+    color: var(--gray-5);
+    text-decoration: none;
+    transition: all 0.2s ease-in-out;
+  }
+
+  li.nav-item a:visited,
+  li.nav-item a:active {
+    color: var(--gray-6);
+  }
+
+  li.nav-item a:hover {
+    color: var(--gray-1);
+  }
+
+  li.nav-item-active a {
+    color: var(--yellow-5);
+    text-decoration: none;
+    transition: all 0.2s ease-in-out;
+  }
+
+  li.nav-item-active a:visited,
+  li.nav-item-active a:active {
+    color: var(--yellow-6);
+  }
+
+  li.nav-item-active a:hover {
+    color: var(--yellow-3);
   }
 </style>

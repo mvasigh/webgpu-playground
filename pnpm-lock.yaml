@@ -16,6 +16,9 @@ devDependencies:
   svelte-check:
     specifier: ^2.10.3
     version: 2.10.3(svelte@3.57.0)
+  svelte-spa-router:
+    specifier: ^3.3.0
+    version: 3.3.0
   tslib:
     specifier: ^2.5.0
     version: 2.5.0
@@ -645,6 +648,11 @@ packages:
       picomatch: 2.3.1
     dev: true
 
+  /regexparam@2.0.1:
+    resolution: {integrity: sha512-zRgSaYemnNYxUv+/5SeoHI0eJIgTL/A2pUtXUPLHQxUldagouJ9p+K6IbIZ/JiQuCEv2E2B1O11SjVQy3aMCkw==}
+    engines: {node: '>=8'}
+    dev: true
+
   /resolve-from@4.0.0:
     resolution: {integrity: sha512-pb/MYmXstAkysRFx8piNI1tGFNQIFA3vkE3Gq4EuA1dF6gHp/+vgZqsCGJapvy8N3Q+4o7FwvquPJcnZ7RYy4g==}
     engines: {node: '>=4'}
@@ -815,6 +823,12 @@ packages:
       strip-indent: 3.0.0
       svelte: 3.57.0
       typescript: 5.0.2
+    dev: true
+
+  /svelte-spa-router@3.3.0:
+    resolution: {integrity: sha512-cwRNe7cxD43sCvSfEeaKiNZg3FCizGxeMcf7CPiWRP3jKXjEma3vxyyuDtPOam6nWbVxl9TNM3hlE/i87ZlqcQ==}
+    dependencies:
+      regexparam: 2.0.1
     dev: true
 
   /svelte@3.57.0:
