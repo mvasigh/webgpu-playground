@@ -14,7 +14,6 @@
     }
 
     // Get a WebGPU context from the canvas and configure it
-    const canvas = document.querySelector("canvas");
     const context = canvas.getContext("webgpu");
     const presentationFormat = navigator.gpu.getPreferredCanvasFormat();
     context.configure({
@@ -49,7 +48,7 @@
       colorAttachments: [
         {
           view: context.getCurrentTexture().createView(),
-          clearValue: [0.3, 0.3, 0.3, 1],
+          clearValue: [0.1, 0.1, 0.1, 1],
           loadOp: "clear",
           storeOp: "store",
         },

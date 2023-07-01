@@ -1,26 +1,6 @@
 <script lang="ts">
-  import type { ComponentType } from "svelte";
-
   import Router, { link, location } from "svelte-spa-router";
-  import Triangle from "./sketches/triangle/Triangle.svelte";
-  import Compute from "./sketches/compute/Compute.svelte";
-
-  const ROUTES: Array<{
-    href: string;
-    label: string;
-    component: ComponentType;
-  }> = [
-    {
-      href: "/triangle",
-      label: "Triangle",
-      component: Triangle,
-    },
-    {
-      href: "/compute",
-      label: "Compute",
-      component: Compute,
-    },
-  ];
+  import { ROUTES } from "./routes";
 </script>
 
 <div class="root">
@@ -59,9 +39,9 @@
   }
 
   h1.title {
-    font-size: 1.5rem;
+    font-size: var(--size-6);
     font-weight: 600;
-    padding: 1rem;
+    padding: var(--size-4);
     margin: 0;
     color: var(--gray-5);
   }
