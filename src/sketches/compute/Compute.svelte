@@ -2,8 +2,6 @@
   import { onMount } from "svelte";
   import shader from "./shader.wgsl?raw";
 
-  let canvas: HTMLCanvasElement;
-
   async function main() {
     // Check to see if user's browser supports WebGPU
     const adapter = await navigator.gpu?.requestAdapter();
@@ -97,11 +95,4 @@
   onMount(main);
 </script>
 
-<canvas bind:this={canvas} />
-
-<style>
-  canvas {
-    width: 600px;
-    height: 600px;
-  }
-</style>
+<p>Open the console to see the results of the computation.</p>
