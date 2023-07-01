@@ -1,28 +1,35 @@
 <script lang="ts">
   import Router, { link, location } from "svelte-spa-router";
-  import { ROUTES } from "./routes";
+  import { ROUTE_CATEGORIES } from "./routes";
 </script>
 
 <div class="root">
   <nav>
     <h1 class="title">WebGPU</h1>
-    <ul class="nav-list">
-      {#each ROUTES as { href, label }}
-        <li class="nav-item" class:nav-item-active={$location === href}>
-          <a use:link {href}>
-            {label}
-          </a>
-        </li>
-      {/each}
-    </ul>
+    <hr />
+    {#each ROUTE_CATEGORIES as { label, routes }}
+      <h2 class="category-title">{label}</h2>
+      <ul class="nav-list">
+        {#each routes as { href, label }}
+          <li class="nav-item" class:nav-item-active={$location === href}>
+            <a use:link {href}>
+              {label}
+            </a>
+          </li>
+        {/each}
+      </ul>
+    {/each}
   </nav>
 
   <main>
     <Router
-      routes={ROUTES.reduce((dict, { href, component }) => {
-        dict[href] = component;
-        return dict;
-      }, {})}
+      routes={ROUTE_CATEGORIES.flatMap(({ routes }) => routes).reduce(
+        (dict, { href, component }) => {
+          dict[href] = component;
+          return dict;
+        },
+        {}
+      )}
     />
   </main>
 </div>
@@ -31,23 +38,36 @@
   .root {
     display: grid;
     grid-template-columns: 300px 1fr;
+    font-family: var(--font-sans);
   }
 
   nav {
-    background-color: var(--gray-11);
-    border-right: 1px solid var(--gray-7);
+    background-color: var(--surface-0);
+    border-right: 1px solid var(--surface-3);
+  }
+
+  hr {
+    margin: 0;
+    height: 1px;
   }
 
   h1.title {
-    font-size: var(--size-6);
+    font-size: var(--font-size-4);
     font-weight: 600;
     padding: var(--size-4);
     margin: 0;
-    color: var(--gray-5);
+    color: var(--gray-2);
+  }
+
+  h2.category-title {
+    font-size: var(--font-size-2);
+    font-weight: 700;
+    padding: var(--size-2) var(--size-4);
+    margin-top: var(--size-4);
   }
 
   main {
-    background-color: var(--gray-12);
+    background-color: var(--surface-1);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -62,6 +82,7 @@
 
   li.nav-item {
     padding: var(--size-1) var(--size-4);
+    font-size: var(--font-size-1);
   }
 
   li.nav-item a {
