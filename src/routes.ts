@@ -2,6 +2,7 @@ import type { ComponentType } from "svelte";
 
 import RedTriangle from "./sketches/red-triangle/RedTriangle.svelte";
 import BasicCompute from "./sketches/basic-compute/BasicCompute.svelte";
+import FancyTriangle from "./sketches/fancy-triangle/FancyTriangle.svelte";
 
 interface Route {
   href: string;
@@ -22,6 +23,11 @@ export const ROUTE_CATEGORIES: RouteCategory[] = [
         href: "/red-triangle",
         label: "Red Triangle",
         component: RedTriangle,
+      },
+      {
+        href: "/fancy-triangle",
+        label: "Fancy Triangle",
+        component: FancyTriangle,
       },
     ],
   },

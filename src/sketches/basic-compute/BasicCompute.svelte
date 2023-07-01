@@ -2,6 +2,9 @@
   import { onMount } from "svelte";
   import shader from "./shader.wgsl?raw";
 
+  const input = new Float32Array([1, 3, 5]);
+  let output: Float32Array;
+
   async function main() {
     // Check to see if user's browser supports WebGPU
     const adapter = await navigator.gpu?.requestAdapter();
@@ -24,9 +27,6 @@
         entryPoint: "computeSomething",
       },
     });
-
-    // TODO: get this data from the UI instead
-    const input = new Float32Array([1, 3, 5]);
 
     // create a buffer on the GPU to hold our computation
     // input and output
@@ -84,15 +84,21 @@
 
     // Read the results
     await resultBuffer.mapAsync(GPUMapMode.READ);
-    const result = new Float32Array(resultBuffer.getMappedRange());
-
-    console.log("input", input);
-    console.log("result", result);
-
+    output = new Float32Array(resultBuffer.getMappedRange().slice(0));
     resultBuffer.unmap();
   }
 
   onMount(main);
 </script>
 
-<p>Open the console to see the results of the computation.</p>
+<p>Input: {input}</p>
+{#if output}
+  <p>Output: {output}</p>
+{/if}
+
+<style>
+  p {
+    font-family: sans-serif;
+    display: block;
+  }
+</style>

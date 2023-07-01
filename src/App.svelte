@@ -71,6 +71,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    flex-direction: column;
     height: 100vh;
   }
 
@@ -97,21 +98,21 @@
   }
 
   li.nav-item a:hover {
-    color: var(--gray-1);
+    color: var(--gray-3);
   }
 
   li.nav-item-active a {
-    color: var(--yellow-5);
+    color: var(--lime-5);
     text-decoration: none;
     transition: all 0.2s ease-in-out;
   }
 
   li.nav-item-active a:visited,
   li.nav-item-active a:active {
-    color: var(--yellow-6);
+    color: var(--lime-6);
   }
 
   li.nav-item-active a:hover {
-    color: var(--yellow-3);
+    color: var(--lime-3);
   }
 </style>
