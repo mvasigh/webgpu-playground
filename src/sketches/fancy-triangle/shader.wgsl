@@ -24,6 +24,12 @@ struct OurVertexShaderOutput {
   return vsOutput;
 }
 
-@fragment fn fs(fsInput: OurVertexShaderOutput) -> @location(0) vec4f {
-  return fsInput.color;
+@fragment fn fs(fsInput: OurVertexShaderOutput) -> @location(0) vec4f {        
+  let on = fsInput.color + 0.1;
+  let off = fsInput.color;
+
+  let grid = vec2u(fsInput.position.xy) / 20;
+  let checker = (grid.x + grid.y) % 2 == 1;
+
+  return select(on, off, checker);
 }
