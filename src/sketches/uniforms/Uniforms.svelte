@@ -2,6 +2,17 @@
   import { onMount } from "svelte";
   import shader from "./shader.wgsl?raw";
 
+  const rand = (min?: number, max?: number): number => {
+    if (min === undefined) {
+      min = 0;
+      max = 1;
+    } else if (max === undefined) {
+      max = min;
+      min = 0;
+    }
+    return min + Math.random() * (max - min);
+  };
+
   let canvas: HTMLCanvasElement;
 
   async function init() {
@@ -20,26 +31,6 @@
       device,
       format: presentationFormat,
     });
-
-    const uniformBufferSize =
-      4 * 4 + // color is 4 32bit floats (4bytes each)
-      2 * 4 + // scale is 2 32bit floats (4bytes each)
-      2 * 4; // offset is 2 32bit floats (4bytes each)
-    const uniformBuffer = device.createBuffer({
-      size: uniformBufferSize,
-      usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
-    });
-
-    // create a typedarray to hold the values for the uniforms in JavaScript
-    const uniformValues = new Float32Array(uniformBufferSize / 4);
-
-    // offsets to the various uniform values in float32 indices
-    const kColorOffset = 0;
-    const kScaleOffset = 4;
-    const kOffsetOffset = 6;
-
-    uniformValues.set([0, 1, 1, 1], kColorOffset); // set the color
-    uniformValues.set([-0.23, -0.25], kOffsetOffset); // set the offset
 
     // Create the shader module (contains vertex and fragment shader)
     const module = device.createShaderModule({
@@ -62,6 +53,50 @@
       },
     });
 
+    const uniformBufferSize =
+      4 * 4 + // color is 4 32bit floats (4bytes each)
+      2 * 4 + // scale is 2 32bit floats (4bytes each)
+      2 * 4; // offset is 2 32bit floats (4bytes each)
+    const uniformBuffer = device.createBuffer({
+      size: uniformBufferSize,
+      usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
+    });
+
+    // offsets to the various uniform values in float32 indices
+    const kColorOffset = 0;
+    const kScaleOffset = 4;
+    const kOffsetOffset = 6;
+    const kNumObjects = 100;
+    const objectInfos = [];
+
+    for (let i = 0; i < kNumObjects; ++i) {
+      const uniformBuffer = device.createBuffer({
+        label: `uniforms for obj: ${i}`,
+        size: uniformBufferSize,
+        usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
+      });
+
+      // create a typedarray to hold the values for the uniforms in JavaScript
+      const uniformValues = new Float32Array(uniformBufferSize / 4);
+      uniformValues.set([0, 1, 0, 1], kColorOffset); // set the color
+      uniformValues.set([-0.5, -0.25], kOffsetOffset); // set the offset
+      uniformValues.set([rand(), rand(), rand(), 1], kColorOffset); // set the color
+      uniformValues.set([rand(-0.9, 0.9), rand(-0.9, 0.9)], kOffsetOffset); // set the offset
+
+      const bindGroup = device.createBindGroup({
+        label: `bind group for obj: ${i}`,
+        layout: renderPipeline.getBindGroupLayout(0),
+        entries: [{ binding: 0, resource: { buffer: uniformBuffer } }],
+      });
+
+      objectInfos.push({
+        scale: rand(0.2, 0.5),
+        uniformBuffer,
+        uniformValues,
+        bindGroup,
+      });
+    }
+
     const bindGroup = device.createBindGroup({
       layout: renderPipeline.getBindGroupLayout(0),
       entries: [{ binding: 0, resource: { buffer: uniformBuffer } }],
@@ -83,12 +118,7 @@
     function render() {
       if (!canvas) return;
 
-      // Set the uniform values in our JavaScript side Float32Array
       const aspect = canvas.width / canvas.height;
-      uniformValues.set([0.5 / aspect, 0.5], kScaleOffset); // set the scale
-
-      // copy the values from JavaScript to the GPU
-      device.queue.writeBuffer(uniformBuffer, 0, uniformValues);
 
       // Get the current texture from the canvas context and
       // set it as the texture to render to.
@@ -98,7 +128,19 @@
       const encoder = device.createCommandEncoder({ label: "render encoder" });
       const pass = encoder.beginRenderPass(renderPassDescriptor);
       pass.setPipeline(renderPipeline);
-      pass.setBindGroup(0, bindGroup);
+
+      for (const {
+        scale,
+        bindGroup,
+        uniformBuffer,
+        uniformValues,
+      } of objectInfos) {
+        uniformValues.set([scale / aspect, scale], kScaleOffset); // set the scale
+        device.queue.writeBuffer(uniformBuffer, 0, uniformValues);
+        pass.setBindGroup(0, bindGroup);
+        pass.draw(3); // call our vertex shader 3 times
+      }
+
       pass.draw(3);
       pass.end();
 
