@@ -8,6 +8,7 @@
 struct Uniforms {
   time: f32,
   count: u32,
+  mouse_position: vec2f,
 }
 
 @group(1) @binding(0) 
@@ -35,8 +36,8 @@ fn reset(@builtin(global_invocation_id) id : vec3u) {
   let seed = f32(id.x)/f32(uniforms.count);
   var p = vec2(r(seed), r(seed + 0.1));
   p *= resolution;
-  positions[id.x] = p;
 
+  positions[id.x] = p;
   velocities[id.x] = vec2(r(f32(id.x+1)), r(f32(id.x + 2))) - 0.5;
 }
 
@@ -45,13 +46,20 @@ fn simulate(@builtin(global_invocation_id) id : vec3u) {
   var p = positions[id.x];
   var v = velocities[id.x];
 
+  var d = uniforms.mouse_position - p;
+  var l = length(d);
+
+  var m = 100.0 / (l * l);
+  v += clamp(normalize(d) * m, vec2f(-0.1, -0.1), vec2f(0.1, 0.1));
   p += v;
   p = (p + resolution) % resolution;
+  v = v * 0.99;
 
   positions[id.x] = p;
-  var r = clamp((abs(v.x) + abs(v.y)) / 0.8, 0.0, 1.0);
+  velocities[id.x] = v;
+  var r = clamp((abs(v.x) + abs(v.y)) / 0.9, 0.0, 1.0);
 
-  pixels[index(p)] = vec4(r, 1.0 - r, 0.0, 1.0);
+  pixels[index(p)] = vec4(r, clamp(1.0 - r, 0.0, 0.2), clamp(1.0 - r, 0.0, 0.3), 1.0);
 }
 
 

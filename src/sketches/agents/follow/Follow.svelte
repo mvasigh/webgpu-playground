@@ -9,14 +9,16 @@
   interface Uniforms {
     time: number;
     count: number;
+    mouse_position: [number, number];
   }
 
   const NOOP = () => {};
-  const WIDTH = 5 * 300;
-  const HEIGHT = 8 * 300;
+  const WIDTH = 1024;
+  const HEIGHT = 1024;
   const UNIFORMS: Uniforms = {
     time: 0,
-    count: 100000,
+    count: 1000000,
+    mouse_position: [0, 0],
   };
   const SETTINGS = {
     scale:
@@ -27,8 +29,7 @@
   };
 
   let canvas: HTMLCanvasElement;
-  let reset: () => void = NOOP;
-  let draw: () => void = NOOP;
+  let handleMouseMove: (x: number, y: number) => void = NOOP;
 
   async function init() {
     if (!canvas) return;
@@ -156,7 +157,7 @@
       resolutionBuffer,
     });
 
-    reset = () => {
+    const _reset = () => {
       const encoder = device.createCommandEncoder();
       const pass = encoder.beginComputePass();
       pass.setPipeline(resetPipeline);
@@ -168,7 +169,7 @@
       device.queue.submit([encoder.finish()]);
     };
 
-    draw = () => {
+    const _draw = () => {
       const encoder = device.createCommandEncoder();
       const pass = encoder.beginComputePass();
       pass.setBindGroup(0, renderBuffersBindGroup);
@@ -192,22 +193,32 @@
       uniformValues.set(UNIFORMS);
       device.queue.writeBuffer(uniformsBuffer, 0, uniformValues.arrayBuffer);
 
-      requestAnimationFrame(draw);
+      requestAnimationFrame(_draw);
     };
+
+    const _setMousePos = (x: number, y: number) => {
+      UNIFORMS.mouse_position = [x, y];
+      uniformValues.set(UNIFORMS);
+      device.queue.writeBuffer(uniformsBuffer, 0, uniformValues.arrayBuffer);
+    };
+
+    return { reset: _reset, draw: _draw, setMousePos: _setMousePos };
   }
 
   onMount(async () => {
-    await init();
+    const { reset, draw, setMousePos } = await init();
     reset();
     draw();
+    handleMouseMove = setMousePos;
   });
 </script>
 
-<canvas bind:this={canvas} />
-
-<style>
-  canvas {
-    width: 100%;
-    height: 100%;
-  }
-</style>
+<canvas
+  bind:this={canvas}
+  on:mousemove={({ offsetX, offsetY, target }) => {
+    handleMouseMove(
+      (offsetX * WIDTH) / canvas.offsetWidth,
+      (offsetY * HEIGHT) / canvas.offsetHeight
+    );
+  }}
+/>
