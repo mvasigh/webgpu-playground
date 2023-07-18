@@ -1,5 +1,9 @@
 lockfileVersion: '6.0'
 
+settings:
+  autoInstallPeers: true
+  excludeLinksFromLockfile: false
+
 devDependencies:
   '@sveltejs/vite-plugin-svelte':
     specifier: ^2.0.3
@@ -28,6 +32,9 @@ devDependencies:
   vite:
     specifier: ^4.3.2
     version: 4.3.2
+  webgpu-utils:
+    specifier: ^0.4.1
+    version: 0.4.1
 
 packages:
 
@@ -900,6 +907,10 @@ packages:
         optional: true
     dependencies:
       vite: 4.3.2
+    dev: true
+
+  /webgpu-utils@0.4.1:
+    resolution: {integrity: sha512-YbnEslqgT8y8DOeICjdVC8O+yC2KnSNxF5ygaIdO4y/9FFvm753lVsCce1ciId/j+2zuRm1JxSp9KRLwwx/MsA==}
     dev: true
 
   /wrappy@1.0.2:

@@ -4,6 +4,7 @@ import RedTriangle from "./sketches/basic/red-triangle/RedTriangle.svelte";
 import BasicCompute from "./sketches/compute/basic-compute/BasicCompute.svelte";
 import FancyTriangle from "./sketches/basic/fancy-triangle/FancyTriangle.svelte";
 import Uniforms from "./sketches/basic/uniforms/Uniforms.svelte";
+import Follow from "./sketches/agents/follow/Follow.svelte";
 
 interface Route {
   href: string;
@@ -44,6 +45,16 @@ export const ROUTE_CATEGORIES: RouteCategory[] = [
         href: "/basic-compute",
         label: "Multiply by 2",
         component: BasicCompute,
+      },
+    ],
+  },
+  {
+    label: "Agents",
+    routes: [
+      {
+        href: "/follow",
+        label: "Follow",
+        component: Follow,
       },
     ],
   },
