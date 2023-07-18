@@ -49,8 +49,9 @@ fn simulate(@builtin(global_invocation_id) id : vec3u) {
   p = (p + resolution) % resolution;
 
   positions[id.x] = p;
+  var r = clamp((abs(v.x) + abs(v.y)) / 0.8, 0.0, 1.0);
 
-  pixels[index(p)] = vec4(0.0, 1.0, 0.0, 1.0);
+  pixels[index(p)] = vec4(r, 1.0 - r, 0.0, 1.0);
 }
 
 

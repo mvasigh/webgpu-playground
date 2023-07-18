@@ -12,11 +12,11 @@
   }
 
   const NOOP = () => {};
-  const WIDTH = 1024;
-  const HEIGHT = 1024;
+  const WIDTH = 5 * 300;
+  const HEIGHT = 8 * 300;
   const UNIFORMS: Uniforms = {
     time: 0,
-    count: 10000,
+    count: 100000,
   };
   const SETTINGS = {
     scale:
