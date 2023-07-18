@@ -17,7 +17,7 @@
   const HEIGHT = 1024;
   const UNIFORMS: Uniforms = {
     time: 0,
-    count: 1000000,
+    count: 100000,
     mouse_position: [0, 0],
   };
   const SETTINGS = {
