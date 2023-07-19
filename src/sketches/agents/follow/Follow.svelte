@@ -13,11 +13,11 @@
   }
 
   const NOOP = () => {};
-  const WIDTH = 800;
-  const HEIGHT = 800;
+  const WIDTH = 1280;
+  const HEIGHT = 720;
   const UNIFORMS: Uniforms = {
     time: 0,
-    count: 80000,
+    count: 40000,
     mouse_position: [0, 0],
   };
   const SETTINGS = {
@@ -225,7 +225,7 @@
 
 <style>
   canvas {
-    max-width: 100%;
-    max-height: 100%;
+    width: 100%;
+    height: 100%;
   }
 </style>

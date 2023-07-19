@@ -5,7 +5,10 @@
 
 <div class="root">
   <nav>
-    <h1 class="title">WebGPU</h1>
+    <h1 class="title">WebGPU Playground</h1>
+    <a class="github-link" href="https://github.com/mvasigh/webgpu-playground">
+      View on Github
+    </a>
     <hr />
     {#each ROUTE_CATEGORIES as { label, routes }}
       <h2 class="category-title">{label}</h2>
@@ -42,7 +45,7 @@
   }
 
   nav {
-    background-color: var(--surface-0);
+    background-color: var(--surface-1);
     border-right: 1px solid var(--surface-3);
   }
 
@@ -52,11 +55,17 @@
   }
 
   h1.title {
-    font-size: var(--font-size-4);
+    font-size: var(--font-size-3);
     font-weight: 600;
     padding: var(--size-4);
     margin: 0;
     color: var(--gray-2);
+  }
+
+  a.github-link {
+    display: block;
+    padding: 0 var(--size-4) var(--size-2);
+    margin: 0;
   }
 
   h2.category-title {
@@ -67,7 +76,7 @@
   }
 
   main {
-    background-color: var(--surface-1);
+    background-color: var(--gray-11);
     display: flex;
     justify-content: center;
     align-items: center;
