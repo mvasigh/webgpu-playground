@@ -13,17 +13,14 @@
   }
 
   const NOOP = () => {};
-  const WIDTH = 1024;
-  const HEIGHT = 1024;
+  const WIDTH = 800;
+  const HEIGHT = 800;
   const UNIFORMS: Uniforms = {
     time: 0,
-    count: 100000,
+    count: 80000,
     mouse_position: [0, 0],
   };
   const SETTINGS = {
-    scale:
-      (0.95 * Math.min(window.innerHeight, window.innerWidth)) /
-      (WIDTH * HEIGHT),
     pixelWorkgroups: Math.ceil((WIDTH * HEIGHT) / 256),
     agentWorkgroups: Math.ceil(UNIFORMS.count / 256),
   };
@@ -221,4 +218,14 @@
       (offsetY * HEIGHT) / canvas.offsetHeight
     );
   }}
+  on:mouseleave={() => {
+    handleMouseMove(0, 0);
+  }}
 />
+
+<style>
+  canvas {
+    max-width: 100%;
+    max-height: 100%;
+  }
+</style>

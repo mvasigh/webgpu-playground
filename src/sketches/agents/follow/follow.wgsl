@@ -46,20 +46,24 @@ fn simulate(@builtin(global_invocation_id) id : vec3u) {
   var p = positions[id.x];
   var v = velocities[id.x];
 
-  var d = uniforms.mouse_position - p;
-  var l = length(d);
-
-  var m = 100.0 / (l * l);
-  v += clamp(normalize(d) * m, vec2f(-0.1, -0.1), vec2f(0.1, 0.1));
+  if (uniforms.mouse_position.x > 0.0 && uniforms.mouse_position.y > 0.0) {
+    var d = uniforms.mouse_position - p;
+    var l = length(d);
+    var m = 200.0 / (l * l);
+    v += clamp(normalize(d) * m, vec2f(-0.05, -0.05), vec2f(0.05, 0.05));
+  }
   p += v;
   p = (p + resolution) % resolution;
-  v = v * 0.99;
+  v = v * 0.991;
 
   positions[id.x] = p;
   velocities[id.x] = v;
-  var r = clamp((abs(v.x) + abs(v.y)) / 0.9, 0.0, 1.0);
 
-  pixels[index(p)] = vec4(r, clamp(1.0 - r, 0.0, 0.2), clamp(1.0 - r, 0.0, 0.3), 1.0);
+  var colorVal = clamp((abs(v.x) + abs(v.y)) / 0.9, 0.0, 1.0);
+  var slowColor = vec4(0.2, 0.0, 0.4, 1.0);
+  var fastColor = vec4(1.0, 0.0, 0.0, 1.0);
+
+  pixels[index(p)] = mix(slowColor, fastColor, colorVal);
 }
 
 
