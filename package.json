@@ -13,6 +13,7 @@
     "@sveltejs/vite-plugin-svelte": "^2.0.3",
     "@tsconfig/svelte": "^4.0.1",
     "@webgpu/types": "^0.1.32",
+    "lil-gui": "^0.18.2",
     "svelte": "^3.57.0",
     "svelte-check": "^2.10.3",
     "svelte-spa-router": "^3.3.0",

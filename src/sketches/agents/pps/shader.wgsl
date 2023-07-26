@@ -43,6 +43,14 @@ fn isOnRightSide(p : vec2f, v : vec2f, op : vec2f) -> bool {
   return ((b.x - p.x) * (op.y - p.y) - (b.y - p.y) * (op.x - p.x)) > 0;
 }
 
+fn hsv2rgb(h : f32, s: f32, v: f32) -> vec3f
+{
+  var c = vec3(h, s, v);
+  var K = vec4(1.0, 2.0 / 3.0, 1.0 / 3.0, 3.0);
+  var p = abs(fract(c.xxx + K.xyz) * 6.0 - K.www);
+  return c.z * mix(K.xxx, clamp(p - K.xxx, vec3(0.0), vec3(1.0)), c.y);
+}
+
 @compute @workgroup_size(256)
 fn reset(@builtin(global_invocation_id) id : vec3u) {
   let seed = f32(id.x)/f32(uniforms.count);
@@ -58,7 +66,7 @@ fn reset(@builtin(global_invocation_id) id : vec3u) {
 fn simulate(@builtin(global_invocation_id) id : vec3u) {
   let a = radians(uniforms.fixed_rotation);
   let b = radians(uniforms.relative_rotation);
-  
+
   var p = positions[id.x];
   var h = headings[id.x];
   var v = vec2(cos(h), sin(h));
@@ -88,7 +96,7 @@ fn simulate(@builtin(global_invocation_id) id : vec3u) {
   positions[id.x] = p;
   headings[id.x] = h;
 
-  pixels[index(p)] = vec4(1.0);
+  pixels[index(p)] =  vec4(hsv2rgb(n/25, 1.0, 1.0), 1.0);
 }
 
 

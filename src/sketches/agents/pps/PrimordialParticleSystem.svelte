@@ -1,5 +1,6 @@
 <script lang="ts">
-  import { onMount } from "svelte";
+  import GUI from "lil-gui";
+  import { onMount, onDestroy } from "svelte";
   import { makeShaderDataDefinitions, makeStructuredView } from "webgpu-utils";
   import ppsShaderCode from "./shader.wgsl?raw";
   import { SIZES } from "../../../lib/sizes";
@@ -17,6 +18,7 @@
 
   const WIDTH = 800;
   const HEIGHT = 800;
+  const MAX_COUNT = 20000;
   const UNIFORMS: Uniforms = {
     time: 0,
     count: 5000,
@@ -27,10 +29,11 @@
   };
   const SETTINGS = {
     pixelWorkgroups: Math.ceil((WIDTH * HEIGHT) / 256),
-    agentWorkgroups: Math.ceil(UNIFORMS.count / 256),
+    agentWorkgroups: Math.ceil(MAX_COUNT / 256),
   };
 
   let canvas: HTMLCanvasElement;
+  let gui: GUI;
 
   async function init() {
     if (!canvas) return;
@@ -98,12 +101,12 @@
 
     // Other buffers
     const positionsBuffer = device.createBuffer({
-      size: SIZES.vec2 * UNIFORMS.count,
+      size: SIZES.vec2 * MAX_COUNT,
       usage: GPUBufferUsage.STORAGE,
     });
 
     const headingsBuffer = device.createBuffer({
-      size: SIZES.f32 * UNIFORMS.count,
+      size: SIZES.f32 * MAX_COUNT,
       usage: GPUBufferUsage.STORAGE,
     });
 
@@ -204,6 +207,19 @@
     const { reset, draw } = await init();
     reset();
     draw();
+
+    gui = new GUI();
+    gui.add(UNIFORMS, "count", 0, MAX_COUNT).onChange(reset);
+    gui.add(UNIFORMS, "velocity", 0, 10);
+    gui.add(UNIFORMS, "detection_distance", 0, 100);
+    gui.add(UNIFORMS, "fixed_rotation", 0, 360);
+    gui.add(UNIFORMS, "relative_rotation", 0, 100);
+  });
+
+  onDestroy(() => {
+    if (gui) {
+      gui.destroy();
+    }
   });
 </script>
 
