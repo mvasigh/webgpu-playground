@@ -1,3 +1,6 @@
+// Code based on "How a life-like system emerges from a simple particle motion law" by Thomas Schmickl, Martin Stefanec & Karl Crailsheim
+// Also uses some code from "Agent Simulation with WebGPU" by Arsiliath: https://arsiliath.gumroad.com/l/webgpu-agents
+
 @group(0) @binding(0)
   var<storage, read_write> pixels : array<vec4f>;
 
