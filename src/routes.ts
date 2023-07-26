@@ -5,6 +5,7 @@ import BasicCompute from "./sketches/compute/basic-compute/BasicCompute.svelte";
 import FancyTriangle from "./sketches/basic/fancy-triangle/FancyTriangle.svelte";
 import Uniforms from "./sketches/basic/uniforms/Uniforms.svelte";
 import Follow from "./sketches/agents/follow/Follow.svelte";
+import PrimordialParticleSystem from "./sketches/agents/pps/PrimordialParticleSystem.svelte";
 
 interface Route {
   href: string;
@@ -55,6 +56,11 @@ export const ROUTE_CATEGORIES: RouteCategory[] = [
         href: "/follow",
         label: "Follow",
         component: Follow,
+      },
+      {
+        href: "/pps",
+        label: "Primordial Particle System",
+        component: PrimordialParticleSystem,
       },
     ],
   },
