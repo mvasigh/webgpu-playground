@@ -21,7 +21,7 @@
     time: 0,
     count: 5000,
     velocity: 2.67,
-    detection_distance: 100.0,
+    detection_distance: 20.0,
     fixed_rotation: 30.0,
     relative_rotation: 17.0,
   };

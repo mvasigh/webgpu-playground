@@ -56,16 +56,15 @@ fn reset(@builtin(global_invocation_id) id : vec3u) {
 
 @compute @workgroup_size(256)
 fn simulate(@builtin(global_invocation_id) id : vec3u) {
+  let a = radians(uniforms.fixed_rotation);
+  let b = radians(uniforms.relative_rotation);
+  
   var p = positions[id.x];
   var h = headings[id.x];
   var v = vec2(cos(h), sin(h));
-
-  // Update heading based on nearby agents
-  let a = radians(uniforms.fixed_rotation);
-  let b = radians(uniforms.relative_rotation);
+  
   var l = 0.0;
   var r = 0.0;
-
   for (var i = 0u; i < uniforms.count; i++) {
     if i == id.x { continue; }
 
