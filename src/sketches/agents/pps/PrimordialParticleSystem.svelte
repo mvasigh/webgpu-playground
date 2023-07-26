@@ -9,14 +9,21 @@
   interface Uniforms {
     time: number;
     count: number;
+    velocity: number;
+    detection_distance: number;
+    fixed_rotation: number;
+    relative_rotation: number;
   }
 
-  const NOOP = () => {};
-  const WIDTH = 1280;
-  const HEIGHT = 720;
+  const WIDTH = 800;
+  const HEIGHT = 800;
   const UNIFORMS: Uniforms = {
     time: 0,
-    count: 40000,
+    count: 5000,
+    velocity: 2.67,
+    detection_distance: 100.0,
+    fixed_rotation: 30.0,
+    relative_rotation: 17.0,
   };
   const SETTINGS = {
     pixelWorkgroups: Math.ceil((WIDTH * HEIGHT) / 256),
@@ -201,10 +208,3 @@
 </script>
 
 <canvas bind:this={canvas} />
-
-<style>
-  canvas {
-    width: 100%;
-    height: 100%;
-  }
-</style>

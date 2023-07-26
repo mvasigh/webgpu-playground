@@ -8,6 +8,10 @@
 struct Uniforms {
   time: f32,
   count: u32,
+  velocity: f32,
+  detection_distance: f32,
+  fixed_rotation: f32,
+  relative_rotation: f32,
 }
 
 @group(1) @binding(0) 
@@ -30,18 +34,60 @@ fn index(p: vec2f) -> i32 {
   return i32(p.x) + (i32(p.y) * i32(resolution.x));
 }
 
+fn angleBetween(a: vec2f, b: vec2f) -> f32 {
+  return atan2(b.y, b.x) - atan2(a.y, a.x);
+}
+
+fn isOnRightSide(p : vec2f, v : vec2f, op : vec2f) -> bool {
+  var b = p + v;
+  return ((b.x - p.x) * (op.y - p.y) - (b.y - p.y) * (op.x - p.x)) > 0;
+}
+
 @compute @workgroup_size(256)
 fn reset(@builtin(global_invocation_id) id : vec3u) {
   let seed = f32(id.x)/f32(uniforms.count);
-  var p = vec2(r(seed), r(seed + 0.1));
-  p *= resolution;
+
+  var p = vec2(r(seed), r(seed + 0.1)) * resolution;
+  var h = radians(mix(0.0, 360.0, r(seed + 0.2)));
 
   positions[id.x] = p;
+  headings[id.x] = h;
 }
 
 @compute @workgroup_size(256)
 fn simulate(@builtin(global_invocation_id) id : vec3u) {
   var p = positions[id.x];
+  var h = headings[id.x];
+  var v = vec2(cos(h), sin(h));
+
+  // Update heading based on nearby agents
+  let a = radians(uniforms.fixed_rotation);
+  let b = radians(uniforms.relative_rotation);
+  var l = 0.0;
+  var r = 0.0;
+
+  for (var i = 0u; i < uniforms.count; i++) {
+    if i == id.x { continue; }
+
+    let other = positions[i];
+    let d = distance(p, other);
+
+    if (d > uniforms.detection_distance) { continue; }
+
+    if (isOnRightSide(p, v, other)) {
+      r += 1.0;
+    } else {
+      l += 1.0;
+    }
+  }
+
+  let n = r + l;
+  var delta_phi = a + b * n * sign(r - l);
+  h += delta_phi;
+  p += normalize(v) * uniforms.velocity;
+
+  positions[id.x] = p;
+  headings[id.x] = h;
 
   pixels[index(p)] = vec4(1.0);
 }
